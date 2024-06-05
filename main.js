@@ -58,6 +58,8 @@ async function getBlog() {
         )
         .join("");
 
+      isLogin && getProfile();
+
       blogsInner.innerHTML = html;
     }
   } catch (err) {
@@ -93,7 +95,7 @@ async function getProfile() {
   }
 }
 
-getProfile();
+// getProfile();
 
 function handleLogout() {
   localStorage.removeItem("login_token");
