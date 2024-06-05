@@ -72,7 +72,8 @@ body {
 
 .blogs-inner .blog .post {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .blogs-inner .blog .post .contents {
@@ -84,6 +85,13 @@ body {
 .blogs-inner .blog .post .contents .title {
   font-size: 1.8rem;
   font-weight: 600;
+}
+
+.blogs-inner .blog .post .time {
+  font-size: 1.4rem;
+  font-weight: 600;
+  font-style: italic;
+  color: #aaa;
 }
 
 .blogs-inner .blog .view-detail {
