@@ -65,7 +65,7 @@ signInForm.addEventListener("submit", async function (e) {
 
     localStorage.setItem("login_token", JSON.stringify(tokens));
 
-    window.location.href = `/index.html`;
+    window.location.href = `../index.html`;
   } catch (err) {
     alert(err);
   } finally {
