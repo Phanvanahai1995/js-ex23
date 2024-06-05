@@ -13,7 +13,7 @@ const blogsInner = document.querySelector(".blogs-inner");
 const newBlogInner = document.querySelector(".newBlog-inner");
 
 const linkLogIn = `<div class="blog-post">
-<div><a href="./layout/login.html">Login</a></div>
+<div><a href="/layout/login.html">Login</a></div>
 </div>`;
 
 // render blog
