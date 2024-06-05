@@ -112,6 +112,7 @@ container.addEventListener("submit", async function (e) {
     if (!response) {
       throw new Error("Có lỗi xảy ra! Vui lòng thử lại");
     } else {
+      getProfile();
       getBlog();
     }
   } catch (err) {
