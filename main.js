@@ -44,7 +44,7 @@ async function getBlog() {
        <div class="post">
            <div class="contents">
                 <div class="title">${blog.title}</div>
-                <div class="content">${blog.content}</div>
+                <div class="content">${blog.content.slice(0, 48) + `...`} </div>
            </div>
           <div class="time">
               ${formattedDate(blog.createdAt)}
