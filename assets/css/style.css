@@ -120,6 +120,10 @@ body {
   opacity: 0.8;
 }
 
+.time-remain {
+  margin-top: 20px;
+}
+
 /* Login and Register */
 
 h1 {
