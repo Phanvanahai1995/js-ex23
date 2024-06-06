@@ -12,8 +12,13 @@ export const createPostHtml = `<div class="verified">
         <label for="content" class="label-form">Nhập nội dung bài viết</label>
         <textarea name="content" id="content" cols="30" rows="10" required></textarea>
     </div>
+     <div class="form-group">
+        <label for="content" class="label-form">Chọn thời gian đăng bài (Nếu có)</label>
+        <input type="text" id="datetime-picker" placeholder="DD/MM/YY">
+    </div>
     
     <button class="submit-article">Submit</button>
+     <span class="time-remain"></span>
    
 </form>
 </div>`;

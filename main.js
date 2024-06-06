@@ -3,6 +3,7 @@ import { httpClient } from "./util/client.js";
 import { config } from "./util/config.js";
 import { formattedDate } from "./util/formatDate.js";
 import { createPostHtml } from "./layout/createPost.js";
+import { datePicker, getTimePicker } from "./util/datepicker.js";
 
 httpClient.baseUrl = config.serverApi;
 
@@ -88,6 +89,7 @@ async function getProfile() {
       } else {
         const name = container.querySelector(".profile .name");
         name.innerText = data.data.name;
+        datePicker();
       }
     }
   } catch {
@@ -103,6 +105,8 @@ function handleLogout() {
   getBlog();
 }
 
+let timerId;
+
 container.addEventListener("submit", async function (e) {
   e.preventDefault();
   try {
@@ -114,6 +118,22 @@ container.addEventListener("submit", async function (e) {
     if (!response) {
       throw new Error("Có lỗi xảy ra! Vui lòng thử lại");
     } else {
+      const timeRemain = document.querySelector(".time-remain");
+      timeRemain.innerText = "";
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = undefined;
+      }
+
+      const inputDatePicker = document.getElementById("datetime-picker");
+      if (inputDatePicker.value && title && content) {
+        const dateSelected = new Date(
+          inputDatePicker._flatpickr.selectedDates[0].toString()
+        );
+        timerId = setInterval(() => {
+          getTimePicker(dateSelected);
+        }, 1000);
+      }
       getProfile();
       getBlog();
     }
