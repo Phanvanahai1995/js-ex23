@@ -4,6 +4,7 @@ import { config } from "./util/config.js";
 import { formattedDate } from "./util/formatDate.js";
 import { createPostHtml } from "./layout/createPost.js";
 import { datePicker, getTimePicker } from "./util/datepicker.js";
+import regex, { convertRegexContent, deleteSpace } from "./util/regex.js";
 
 httpClient.baseUrl = config.serverApi;
 
@@ -32,34 +33,38 @@ async function getBlog() {
     } else {
       const blogs = data.data;
 
-      const html = blogs
-        .map(
-          (blog) => `
-         <div class="blog">
-        <div class="image">
-          <img src="https://plus.unsplash.com/premium_photo-1683140874457-ba20cc63f9c8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="${
-            blog.title
-          }" />
-          <div class="name">${blog.userId.name.toUpperCase()}</div>
-        </div>
-       <div class="post">
-           <div class="contents">
-                <div class="title">${blog.title}</div>
-                <div class="content">${blog.content.slice(0, 48) + `...`} </div>
+      let html = blogs
+        .map((blog) => {
+          let match = convertRegexContent(blog);
+
+          return `
+            <div class="blog">
+           <div class="image">
+             <img src="./assets/img/img.jpg" alt="${blog.title}" />
+             <div class="name">${blog.userId.name.toUpperCase()}</div>
            </div>
-          <div class="time">
-              ${formattedDate(blog.createdAt)}
+          <div class="post">
+              <div class="contents">
+                   <div class="title">${blog.title}</div>
+                   <div class="content">${
+                     match ? deleteSpace(match) : deleteSpace(blog.content)
+                   } </div>
+              </div>
+             <div class="time">
+                 ${formattedDate(blog.createdAt)}
+             </div>
           </div>
-       </div>
-        <div class="view-detail"><a href="#" data-id="${
-          blog._id
-        }">View Detail</a></div>
-      </div> 
-      `
-        )
+           <div class="view-detail"><span class="show-detail" data-id="${
+             blog._id
+           }">View Detail</span></div>
+         </div> 
+         `;
+        })
         .join("");
 
       isLogin && getProfile();
+
+      html = regex(html);
 
       blogsInner.innerHTML = html;
     }
@@ -144,9 +149,56 @@ container.addEventListener("submit", async function (e) {
   }
 });
 
+function renderDetailBlog(blog) {
+  let match = convertRegexContent(blog);
+
+  let html = `
+     <div class="blog blog-detail">
+        <div class="image">
+          <img src="./assets/img/img.jpg" alt="${blog.title}" />
+          <div class="name">${blog.userId.name.toUpperCase()}</div>
+        </div>
+       <div class="post">
+           <div class="contents">
+                <div class="title">${blog.title}</div>
+                <div class="content">${
+                  match ? deleteSpace(match) : deleteSpace(blog.content)
+                } </div>
+           </div>
+          <div class="time">
+              ${formattedDate(blog.createdAt)}
+          </div>
+       </div>
+        <div class="view-detail back-home">Back to home!</div>
+      </div>
+    
+
+    `;
+
+  html = regex(html);
+
+  blogsInner.innerHTML = html;
+}
+
+async function showDetailBlog(id) {
+  const { response, data } = await httpClient.get(`/blogs/${id}`);
+
+  if (!response) throw new Error("Fetch blog not found!");
+
+  renderDetailBlog(data.data);
+}
+
 container.addEventListener("click", function (e) {
   if (e.target.classList.contains("logout")) {
     handleLogout();
     getBlog();
   }
+
+  if (e.target.classList.contains("show-detail")) {
+    const userId = e.target.dataset.id;
+    showDetailBlog(userId);
+    newBlogInner.innerHTML = "";
+  }
+
+  if (e.target.classList.contains("back-home")) getBlog();
 });
