@@ -60,8 +60,6 @@ export function convertRegexContent(blog) {
       urlPatternHttp,
       `<a href="$1" target="_blank">$1</a>`
     );
-
-    console.log(match);
   }
 
   if (

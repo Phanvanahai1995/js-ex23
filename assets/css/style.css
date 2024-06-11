@@ -85,15 +85,14 @@ body {
   gap: 10px;
 }
 
+.blogs-inner .blog .post .contents .content {
+  text-align: center;
+}
+
 .blogs-inner .blog .post .contents .title {
   font-size: 1.8rem;
   font-weight: 600;
 }
-
-/* .blogs-inner .blog .post .contents .content {
-  display: flex;
-  flex-direction: column;
-} */
 
 .blogs-inner .blog .post .contents a {
   text-decoration: underline;
