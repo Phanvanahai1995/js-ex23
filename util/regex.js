@@ -49,7 +49,9 @@ export function convertRegexContent(blog) {
       } else {
         blog.content.replace(
           url[i],
-          `<a href="${url[i]}" target="_blank">${url[i]}</a>`
+          `<a href="${url[i]
+            .replaceAll(/\n/g, "")
+            .replaceAll(" ", "")}" target="_blank">${url[i]}</a>`
         );
       }
     }
@@ -71,8 +73,12 @@ export function convertRegexContent(blog) {
       } else {
         blog.content = blog.content.replaceAll(
           urlNonHttp[i],
-          `<a href="https://${urlNonHttp[i]}" target="_blank">${urlNonHttp[i]}</a>`
+          `<a href="https://${urlNonHttp[i]
+            .replaceAll(/\n/g, "")
+            .replaceAll(" ", "")}" target="_blank">${urlNonHttp[i]}</a>`
         );
+
+        console.log(urlNonHttp[i].replaceAll(" ", "").replaceAll("<br/>", ""));
       }
     }
   }
@@ -81,3 +87,5 @@ export function convertRegexContent(blog) {
 }
 
 export default regex;
+
+let content = `http://127.0.0.1:5500/https://%20%3Cbr/%3E%20youtube.com`;
