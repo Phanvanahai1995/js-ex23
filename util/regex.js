@@ -1,16 +1,19 @@
-const phonePattern = /((0|\+84)[0-9]{9})/g;
+const phonePattern = /((0|\+84|\(\+84\))[0-9]{9})/g;
 
-export const patternEmail =
+const patternEmail =
   /([a-zA-Z][a-zA-Z0-9-_\.]+[a-zA-Z0-9]+@([a-zA-Z]|[a-zA-Z][a-zA-Z-_0-9\.]*[a-zA-Z0-9])(\.[a-zA-Z]{2,})+)/g;
 
-export const patternYt =
+const patternYt =
   /((?:(?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/|shorts\/)?)([\w\-]+)(\S+)?)/g;
+
+// const linkRegex =
+//   /(((https?:\/\/)?(www\.)?)?([-a-zA-Z0-9:%._\+~#=;]{1,256}\.[a-zA-Z0-9())]{1,6}\b([-a-zA-ZàáãạảăắằẳẵặâấầẩẫậèéẹẻẽêềếểễệđìíĩỉịòóõọỏôốồổỗộơớờởỡợùúũụủưứừửữựỳỵỷỹýÀÁÃẠẢĂẮẰẲẴẶÂẤẦẨẪẬÈÉẸẺẼÊỀẾỂỄỆĐÌÍĨỈỊÒÓÕỌỎÔỐỒỔỖỘƠỚỜỞỠỢÙÚŨỤỦƯỨỪỬỮỰỲỴỶỸÝ0-9()@:%_\+.~#?&\/\/=;]*)))/g;
 
 const urlPatternHttp =
   /(https?:\/\/(?:www\.)?([-a-zA-Z0-9@:%._\+~#=]{1,256})\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*))/g;
 
 const urlPatternNoneHttp =
-  /([^http][-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{2,}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*))/g;
+  /([-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{2,}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*))/g;
 
 export function deleteSpace(content) {
   return content
@@ -25,33 +28,15 @@ export function deleteSpace(content) {
 }
 
 function regex(html) {
-  if (phonePattern.exec(html)) {
-    html = html.replace(
-      phonePattern,
-      `<a href='tel:$1' class='phone-link' target="_blank">$1</a>`
-    );
-  }
-
-  return html;
-}
-
-export function convertRegexContent(blog) {
-  let url = blog.content.match(urlPatternHttp);
-  let urlNonHttp = blog.content.match(urlPatternNoneHttp);
+  let url = html.match(urlPatternHttp);
+  let urlNonHttp = html.match(urlPatternNoneHttp);
 
   if (url) {
     for (let i = 0; i < url.length; i++) {
-      if (patternYt.test(url[i])) {
-        blog.content = blog.content.replace(
-          patternYt,
-          `<iframe width="560" height="315" src="https://www.youtube.com/embed/$5$6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
-        );
-      } else {
-        blog.content.replace(
+      if (!patternYt.test(url[i]) && !url[i].includes("youtube")) {
+        html = html.replace(
           url[i],
-          `<a href="${url[i]
-            .replaceAll(/\n/g, "")
-            .replaceAll(" ", "")}" target="_blank">${url[i]}</a>`
+          `<a href="${url[i]}" target="_blank">${url[i]}</a>`
         );
       }
     }
@@ -59,33 +44,45 @@ export function convertRegexContent(blog) {
 
   if (urlNonHttp) {
     for (let i = 0; i < urlNonHttp.length; i++) {
-      if (patternEmail.test(urlNonHttp[i])) {
-        blog.content = blog.content.replace(
-          patternEmail,
-          `<a href="mailto:$1" title="Tên miền web $2" target='_blank'>$1</a>`
-        );
-      } else if (patternYt.test(urlNonHttp[i])) {
-        // console.log(urlNonHttp[i]);
-        blog.content.replace(
-          patternYt,
-          `<iframe width="560" height="315" src="https://www.youtube.com/embed/$5$6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
-        );
-      } else {
-        blog.content = blog.content.replaceAll(
-          urlNonHttp[i],
-          `<a href="https://${urlNonHttp[i]
-            .replaceAll(/\n/g, "")
-            .replaceAll(" ", "")}" target="_blank">${urlNonHttp[i]}</a>`
-        );
-
-        console.log(urlNonHttp[i].replaceAll(" ", "").replaceAll("<br/>", ""));
+      if (
+        !patternYt.test(urlNonHttp[i]) &&
+        !patternEmail.test(urlNonHttp[i]) &&
+        !urlNonHttp[i].includes("youtube") &&
+        !urlNonHttp[i].includes("@")
+      ) {
+        html = html
+          .replace(
+            urlNonHttp[i],
+            `<a href="http://${urlNonHttp[i]}" target="_blank">${urlNonHttp[i]}</a>`
+          )
+          .replaceAll("/a>", "</a>")
+          .replaceAll("<</a>", "</a>");
       }
     }
   }
 
-  return blog.content;
+  if (phonePattern.exec(html)) {
+    html = html.replace(
+      phonePattern,
+      `<a href='tel:$1' class='phone-link' target="_blank">$1</a>`
+    );
+  }
+
+  if (patternEmail.exec(html)) {
+    html = html.replace(
+      patternEmail,
+      `<a href="mailto:$1" title="Tên miền web $2" target='_blank'>$1</a>`
+    );
+  }
+
+  if (patternYt.exec(html)) {
+    html = html.replace(
+      patternYt,
+      `<iframe width="560" height="315" src="https://www.youtube.com/embed/$5$6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`
+    );
+  }
+
+  return html;
 }
 
 export default regex;
-
-let content = `http://127.0.0.1:5500/https://%20%3Cbr/%3E%20youtube.com`;

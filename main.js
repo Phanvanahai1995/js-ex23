@@ -4,7 +4,7 @@ import { config } from "./util/config.js";
 import { formattedDate } from "./util/formatDate.js";
 import { createPostHtml } from "./layout/createPost.js";
 import { datePicker, getTimePicker } from "./util/datepicker.js";
-import regex, { convertRegexContent, deleteSpace } from "./util/regex.js";
+import regex, { deleteSpace } from "./util/regex.js";
 
 httpClient.baseUrl = config.serverApi;
 
@@ -35,20 +35,16 @@ async function getBlog() {
 
       let html = blogs
         .map((blog) => {
-          let match = convertRegexContent(blog);
-
           return `
             <div class="blog">
            <div class="image">
-             <img src="./assets/img/img.jpg" alt="${blog.title}" />
+            
              <div class="name">${blog.userId.name.toUpperCase()}</div>
            </div>
           <div class="post">
               <div class="contents">
                    <div class="title">${blog.title}</div>
-                   <div class="content">${
-                     match ? deleteSpace(match) : deleteSpace(blog.content)
-                   } </div>
+                   <div class="content">${deleteSpace(blog.content)} </div>
               </div>
              <div class="time">
                  ${formattedDate(blog.createdAt)}
@@ -150,20 +146,16 @@ container.addEventListener("submit", async function (e) {
 });
 
 function renderDetailBlog(blog) {
-  let match = convertRegexContent(blog);
-
   let html = `
      <div class="blog blog-detail">
         <div class="image">
-          <img src="./assets/img/img.jpg" alt="${blog.title}" />
+        
           <div class="name">${blog.userId.name.toUpperCase()}</div>
         </div>
        <div class="post">
            <div class="contents">
                 <div class="title">${blog.title}</div>
-                <div class="content">${
-                  match ? deleteSpace(match) : deleteSpace(blog.content)
-                } </div>
+                <div class="content">${deleteSpace(blog.content)} </div>
            </div>
           <div class="time">
               ${formattedDate(blog.createdAt)}
