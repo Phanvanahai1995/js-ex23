@@ -44,19 +44,20 @@ function regex(html) {
 
   if (urlNonHttp) {
     for (let i = 0; i < urlNonHttp.length; i++) {
+      let isUrl;
+      if (url) isUrl = url.every((link) => !link.includes(urlNonHttp[i]));
+
       if (
         !patternYt.test(urlNonHttp[i]) &&
         !patternEmail.test(urlNonHttp[i]) &&
         !urlNonHttp[i].includes("youtube") &&
-        !urlNonHttp[i].includes("@")
+        !urlNonHttp[i].includes("@") &&
+        isUrl
       ) {
-        html = html
-          .replace(
-            urlNonHttp[i],
-            `<a href="http://${urlNonHttp[i]}" target="_blank">${urlNonHttp[i]}</a>`
-          )
-          .replaceAll("/a>", "</a>")
-          .replaceAll("<</a>", "</a>");
+        html = html.replace(
+          urlNonHttp[i],
+          `<a href="http://${urlNonHttp[i]}" target="_blank">${urlNonHttp[i]}</a>`
+        );
       }
     }
   }

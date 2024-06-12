@@ -63,6 +63,14 @@ async function getBlog() {
       html = regex(html);
 
       blogsInner.innerHTML = html;
+
+      // const linkArr = Array.from(blogsInner.querySelectorAll("a"));
+
+      // const newLink = linkArr.filter((link) =>
+      //   link.outerHTML.includes('href="https://<a href="')
+      // );
+
+      // console.log(newLink[0].href);
     }
   } catch (err) {
     alert(err);
